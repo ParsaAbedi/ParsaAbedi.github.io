@@ -12,7 +12,7 @@
   </head>
   <body>
     <div class="wrap">
-      <a class="back" href="../index.html">← Back to portfolio</a>
+      <a class="back" href="index.html">← Back to portfolio</a>
       <main>
         <section class="hero">
           <div>
@@ -57,14 +57,14 @@
       <section>
         <div class="eyebrow">Implementation evidence</div>
         <h2>Top-level transistor schematic.</h2>
-        <div class="img-wrap"><img src="../assets/sar-adc/top-level-schematic.png" alt="Top-level Cadence Virtuoso schematic of the SAR ADC"></div>
+        <div class="img-wrap"><img src="top-level-schematic.png" alt="Top-level Cadence Virtuoso schematic of the SAR ADC"></div>
         <p class="caption">Report-derived top-level Cadence Virtuoso view, showing the differential CDAC, sampling path, comparator, and associated control connections.</p>
       </section>
 
       <section class="two">
         <div><div class="eyebrow">Static verification</div><h2>Linearity was well within half an LSB.</h2><p>An endpoint-corrected static sweep found no missing codes. The maximum reported INL and DNL were both approximately 0.02492 LSB. The final residue sanity check was approximately 0.0093 LSB.</p></div>
         <div>
-          <div class="img-wrap"><img src="../assets/sar-adc/static-linearity.png" alt="Endpoint-corrected INL and DNL plots"></div>
+          <div class="img-wrap"><img src="static-linearity.png" alt="Endpoint-corrected INL and DNL plots"></div>
           <table class="results"><thead><tr><th>Metric</th><th>Result</th><th>Interpretation</th></tr></thead><tbody><tr><td>Maximum |INL|</td><td>0.02492 LSB</td><td class="pass">No missing-code concern</td></tr><tr><td>Maximum |DNL|</td><td>0.02492 LSB</td><td class="pass">Well below 0.5 LSB</td></tr><tr><td>Final residue</td><td>~0.0093 LSB</td><td class="pass">Sanity check passed</td></tr></tbody></table>
         </div>
       </section>
@@ -73,8 +73,8 @@
         <div class="eyebrow">Dynamic verification</div><h2>The missing fraction of a bit was the useful result.</h2>
         <div class="story"><p>At the nominal coherent input frequency (12.109375 MHz), the transistor-level simulation reached 4.52 ENOB. The FFT showed the third harmonic as the dominant non-fundamental component. That points to signal-dependent nonlinearity - rather than white noise alone - as the primary explanation for the remaining gap to an ideal 5-bit result.</p></div>
         <div class="plot-grid" style="margin-top:18px">
-          <div class="plot-card"><img src="../assets/sar-adc/nominal-fft.png" alt="Nominal output FFT"><div class="inner"><h3>Nominal input</h3><p>12.109375 MHz input, 100 MS/s output. SNDR: 28.98 dB; SFDR: 33.91 dB; ENOB: 4.52 bits.</p></div></div>
-          <div class="plot-card"><img src="../assets/sar-adc/nyquist-fft.png" alt="Near-Nyquist output FFT"><div class="inner"><h3>Near Nyquist</h3><p>48.92578125 MHz input, 100 MS/s output. SNDR: 26.71 dB; SFDR: 28.88 dB; ENOB: 4.14 bits.</p></div></div>
+          <div class="plot-card"><img src="nominal-fft.png" alt="Nominal output FFT"><div class="inner"><h3>Nominal input</h3><p>12.109375 MHz input, 100 MS/s output. SNDR: 28.98 dB; SFDR: 33.91 dB; ENOB: 4.52 bits.</p></div></div>
+          <div class="plot-card"><img src="nyquist-fft.png" alt="Near-Nyquist output FFT"><div class="inner"><h3>Near Nyquist</h3><p>48.92578125 MHz input, 100 MS/s output. SNDR: 26.71 dB; SFDR: 28.88 dB; ENOB: 4.14 bits.</p></div></div>
         </div>
       </section>
 
@@ -88,6 +88,6 @@
         <div class="next"><div><h3>Size with interactions in mind</h3><p>Larger sampling devices improve on-resistance, but increase parasitics and charge injection. The final design balanced these effects against a ~2.85 ns acquisition interval.</p></div><div><h3>Verify beyond nominal</h3><p>The 200-run comparator Monte Carlo regeneration result and ~0.293% (1σ) unit-capacitor mismatch were useful margins - but did not replace system-level dynamic tests.</p></div><div><h3>Move toward implementation</h3><p>Rev. B should include transistor-level SAR digital power, layout, DRC/LVS, parasitic extraction, and post-layout PVT/mismatch characterization.</p></div></div>
       </section>
     </div>
-    <hr class="divider"><div class="wrap"><footer><span>© 2026 Mohammad Parsa Abedi</span><span>Academic circuit-design case study · <a href="../index.html" style="color:var(--cyan)">Portfolio home</a></span></footer></div>
+    <hr class="divider"><div class="wrap"><footer><span>© 2026 Mohammad Parsa Abedi</span><span>Academic circuit-design case study · <a href="index.html" style="color:var(--cyan)">Portfolio home</a></span></footer></div>
   </body>
 </html>
