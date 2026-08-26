@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A 5-bit 100 MS/s fully differential SAR ADC in 65 nm CMOS - academic schematic-level case study by Mohammad Parsa Abedi.">
+    <title>5-bit SAR ADC - Parsa Abedi</title>
+    <style>
+      :root { --ink:#e9eff5; --muted:#a9b9c8; --panel:#121d2a; --line:#294054; --cyan:#54d4dc; --orange:#ffb86b; --bg:#08111c; }
+      *{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;color:var(--ink);background:radial-gradient(circle at 91% 0,#123d4e 0,transparent 30rem),var(--bg);font:16px/1.6 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif} a{color:inherit;text-decoration:none}.wrap{width:min(1120px,calc(100% - 40px));margin:auto}.back{display:inline-flex;gap:9px;align-items:center;margin:27px 0;color:var(--muted);font-weight:700;font-size:.9rem}.back:hover{color:var(--cyan)}.eyebrow{color:var(--cyan);font-size:.76rem;letter-spacing:.13em;text-transform:uppercase;font-weight:800}.hero{padding:54px 0 75px;display:grid;grid-template-columns:1.2fr .8fr;gap:45px;align-items:end}.hero h1{font-size:clamp(3.1rem,7vw,6rem);line-height:.94;letter-spacing:-.065em;margin:18px 0 25px}.lead{max-width:650px;color:var(--muted);font-size:1.1rem}.scope{border-left:2px solid var(--orange);padding:13px 17px;color:#dbe4eb;background:rgba(255,184,107,.06);font-size:.94rem}.metric-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.metric{border:1px solid var(--line);border-radius:13px;background:rgba(18,29,42,.78);padding:17px}.metric b{font-size:1.42rem;letter-spacing:-.04em;display:block}.metric span{color:var(--muted);font-size:.8rem}.divider{border:0;border-top:1px solid var(--line);margin:0}section{padding:72px 0}.two{display:grid;grid-template-columns:.88fr 1.12fr;gap:55px}.two p{color:var(--muted)}h2{font-size:clamp(2rem,4vw,3.35rem);line-height:1.02;letter-spacing:-.055em;margin:10px 0 20px}h3{font-size:1.25rem;letter-spacing:-.03em;margin:0 0 9px}.diagram{border:1px solid var(--line);border-radius:18px;padding:22px;background:linear-gradient(145deg,#0f1c29,#0c1621);overflow:hidden}.diagram svg{display:block;width:100%;height:auto}.caption{color:var(--muted);font-size:.85rem;margin:12px 0 0}.img-wrap{border:1px solid var(--line);border-radius:15px;overflow:hidden;background:#fff}.img-wrap img{display:block;width:100%;height:auto}.results{width:100%;border-collapse:collapse;margin-top:20px;font-size:.94rem}.results th,.results td{border-bottom:1px solid var(--line);padding:12px 9px;text-align:left}.results th{color:var(--muted);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase}.pass{color:var(--cyan);font-weight:700}.story{padding:28px;border:1px solid var(--line);border-radius:16px;background:rgba(18,29,42,.72)}.story p{margin:0;color:var(--muted)}.plot-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.plot-card{border:1px solid var(--line);border-radius:17px;overflow:hidden;background:#101a26}.plot-card .inner{padding:18px}.plot-card img{width:100%;display:block;background:white}.plot-card p{color:var(--muted);margin:6px 0 0;font-size:.9rem}.next{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.next div{padding:22px;border-top:2px solid var(--cyan);background:rgba(18,29,42,.66)}.next p{color:var(--muted);margin:7px 0 0;font-size:.92rem}footer{padding:32px 0 42px;color:var(--muted);font-size:.86rem;display:flex;justify-content:space-between;gap:20px}@media(max-width:760px){.hero,.two,.plot-grid,.next{grid-template-columns:1fr}.hero{padding-top:32px;gap:28px}.metric-grid{grid-template-columns:repeat(4,1fr)}.metric{padding:12px}.metric b{font-size:1.1rem}.metric span{font-size:.7rem}section{padding:52px 0}footer{flex-direction:column}.two{gap:25px}}@media(max-width:480px){.metric-grid{grid-template-columns:repeat(2,1fr)}}
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <a class="back" href="../index.html">← Back to portfolio</a>
+      <main>
+        <section class="hero">
+          <div>
+            <div class="eyebrow">Mixed-signal IC design / case study 01</div>
+            <h1>5-bit, 100 MS/s<br>SAR ADC.</h1>
+            <p class="lead">A fully differential, top-plate-sampling successive-approximation ADC designed and simulated in a 65 nm CMOS process.</p>
+            <p class="scope"><strong>Scope note:</strong> Academic, schematic-level transistor simulation. No layout, tapeout, or silicon measurement is claimed.</p>
+          </div>
+          <div class="metric-grid">
+            <div class="metric"><b>4.52</b><span>ENOB, nominal</span></div>
+            <div class="metric"><b>28.98 dB</b><span>SNDR, nominal</span></div>
+            <div class="metric"><b>33.91 dB</b><span>SFDR, nominal</span></div>
+            <div class="metric"><b>9.72 µW</b><span>Measured analog/CDAC/reference power</span></div>
+          </div>
+        </section>
+      </main>
+    </div>
+    <hr class="divider">
+
+    <div class="wrap">
+      <section class="two">
+        <div>
+          <div class="eyebrow">The problem</div>
+          <h2>Resolve a differential input with a bounded error budget.</h2>
+          <p>The design targets a 1 V<sub>pp</sub> differential input at a 100 MS/s conversion rate. The important challenge was not merely connecting a CDAC, comparator, and controller: each block had to settle and make its decision inside a limited timing budget without consuming the mismatch and noise margin of a 5-bit converter.</p>
+          <p>The resulting architecture uses a differential CDAC, transmission-gate top-plate sampling, a StrongArm dynamic comparator, reference switching, and SAR control.</p>
+        </div>
+        <div class="diagram">
+          <svg viewBox="0 0 700 300" role="img" aria-label="SAR ADC signal path">
+            <defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#54d4dc"/></marker></defs>
+            <text x="32" y="45" fill="#a9b9c8" font-size="16" font-family="system-ui">Vinp / Vinn</text><path d="M115 55 H180" stroke="#54d4dc" stroke-width="3" marker-end="url(#arrow)"/>
+            <rect x="184" y="26" width="138" height="62" rx="8" fill="#18293a" stroke="#54d4dc"/><text x="211" y="63" fill="#e9eff5" font-size="18" font-family="system-ui">Sampling TG</text>
+            <path d="M324 55 H380" stroke="#54d4dc" stroke-width="3" marker-end="url(#arrow)"/><rect x="384" y="26" width="132" height="62" rx="8" fill="#18293a" stroke="#54d4dc"/><text x="424" y="63" fill="#e9eff5" font-size="18" font-family="system-ui">CDAC</text>
+            <path d="M518 55 H574" stroke="#54d4dc" stroke-width="3" marker-end="url(#arrow)"/><rect x="578" y="26" width="98" height="62" rx="8" fill="#18293a" stroke="#54d4dc"/><text x="592" y="63" fill="#e9eff5" font-size="16" font-family="system-ui">StrongArm</text>
+            <path d="M628 90 V164 H535" stroke="#ffb86b" stroke-width="3" fill="none" marker-end="url(#arrow)"/><rect x="350" y="132" width="183" height="65" rx="8" fill="#30271b" stroke="#ffb86b"/><text x="387" y="171" fill="#e9eff5" font-size="18" font-family="system-ui">SAR controller</text>
+            <path d="M350 165 H251 V90" stroke="#ffb86b" stroke-width="3" fill="none" marker-end="url(#arrow)"/><text x="208" y="246" fill="#a9b9c8" font-size="15" font-family="system-ui">VREFP / VREFN switching</text><text x="547" y="246" fill="#a9b9c8" font-size="15" font-family="system-ui">D[4:0]</text>
+          </svg>
+          <p class="caption">Signal path and decision loop. The public page shows a redrawn functional view; the report-derived top-level schematic is included below as supporting evidence.</p>
+        </div>
+      </section>
+
+      <section>
+        <div class="eyebrow">Implementation evidence</div>
+        <h2>Top-level transistor schematic.</h2>
+        <div class="img-wrap"><img src="../assets/sar-adc/top-level-schematic.png" alt="Top-level Cadence Virtuoso schematic of the SAR ADC"></div>
+        <p class="caption">Report-derived top-level Cadence Virtuoso view, showing the differential CDAC, sampling path, comparator, and associated control connections.</p>
+      </section>
+
+      <section class="two">
+        <div><div class="eyebrow">Static verification</div><h2>Linearity was well within half an LSB.</h2><p>An endpoint-corrected static sweep found no missing codes. The maximum reported INL and DNL were both approximately 0.02492 LSB. The final residue sanity check was approximately 0.0093 LSB.</p></div>
+        <div>
+          <div class="img-wrap"><img src="../assets/sar-adc/static-linearity.png" alt="Endpoint-corrected INL and DNL plots"></div>
+          <table class="results"><thead><tr><th>Metric</th><th>Result</th><th>Interpretation</th></tr></thead><tbody><tr><td>Maximum |INL|</td><td>0.02492 LSB</td><td class="pass">No missing-code concern</td></tr><tr><td>Maximum |DNL|</td><td>0.02492 LSB</td><td class="pass">Well below 0.5 LSB</td></tr><tr><td>Final residue</td><td>~0.0093 LSB</td><td class="pass">Sanity check passed</td></tr></tbody></table>
+        </div>
+      </section>
+
+      <section>
+        <div class="eyebrow">Dynamic verification</div><h2>The missing fraction of a bit was the useful result.</h2>
+        <div class="story"><p>At the nominal coherent input frequency (12.109375 MHz), the transistor-level simulation reached 4.52 ENOB. The FFT showed the third harmonic as the dominant non-fundamental component. That points to signal-dependent nonlinearity - rather than white noise alone - as the primary explanation for the remaining gap to an ideal 5-bit result.</p></div>
+        <div class="plot-grid" style="margin-top:18px">
+          <div class="plot-card"><img src="../assets/sar-adc/nominal-fft.png" alt="Nominal output FFT"><div class="inner"><h3>Nominal input</h3><p>12.109375 MHz input, 100 MS/s output. SNDR: 28.98 dB; SFDR: 33.91 dB; ENOB: 4.52 bits.</p></div></div>
+          <div class="plot-card"><img src="../assets/sar-adc/nyquist-fft.png" alt="Near-Nyquist output FFT"><div class="inner"><h3>Near Nyquist</h3><p>48.92578125 MHz input, 100 MS/s output. SNDR: 26.71 dB; SFDR: 28.88 dB; ENOB: 4.14 bits.</p></div></div>
+        </div>
+      </section>
+
+      <section class="two">
+        <div><div class="eyebrow">What changed near Nyquist</div><h2>The dominant mechanism remained harmonic distortion.</h2></div>
+        <div><table class="results"><thead><tr><th>Metric</th><th>12.11 MHz</th><th>48.93 MHz</th><th>Change</th></tr></thead><tbody><tr><td>SNDR</td><td>28.98 dB</td><td>26.71 dB</td><td>-2.28 dB</td></tr><tr><td>SFDR</td><td>33.91 dB</td><td>28.88 dB</td><td>-5.03 dB</td></tr><tr><td>ENOB</td><td>4.52 bits</td><td>4.14 bits</td><td>-0.38 bit</td></tr></tbody></table><p class="caption">The report identifies an aliased HD3 spur as dominant at high input frequency. Sampling-network settling, voltage-dependent switch resistance, clock feedthrough, and comparator kickback are the leading mechanisms to investigate.</p></div>
+      </section>
+
+      <section>
+        <div class="eyebrow">What I learned</div><h2>Good blocks are not automatically a good converter.</h2>
+        <div class="next"><div><h3>Size with interactions in mind</h3><p>Larger sampling devices improve on-resistance, but increase parasitics and charge injection. The final design balanced these effects against a ~2.85 ns acquisition interval.</p></div><div><h3>Verify beyond nominal</h3><p>The 200-run comparator Monte Carlo regeneration result and ~0.293% (1σ) unit-capacitor mismatch were useful margins - but did not replace system-level dynamic tests.</p></div><div><h3>Move toward implementation</h3><p>Rev. B should include transistor-level SAR digital power, layout, DRC/LVS, parasitic extraction, and post-layout PVT/mismatch characterization.</p></div></div>
+      </section>
+    </div>
+    <hr class="divider"><div class="wrap"><footer><span>© 2026 Mohammad Parsa Abedi</span><span>Academic circuit-design case study · <a href="../index.html" style="color:var(--cyan)">Portfolio home</a></span></footer></div>
+  </body>
+</html>
