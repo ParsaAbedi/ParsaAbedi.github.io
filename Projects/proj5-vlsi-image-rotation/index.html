@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="RTL, FPGA, and ASIC-flow case study for a fixed-point image-rotation accelerator.">
+  <title>VLSI Image Rotation Accelerator | Parsa Abedi</title>
+  <link rel="stylesheet" href="../../styles.css">
+</head>
+<body>
+  <div class="wrap">
+    <a class="back" href="../../#projects">← Back to portfolio</a>
+    <section class="case-hero">
+      <div>
+        <div class="eyebrow">Digital VLSI · Verilog · Zynq</div>
+        <h1>Image Rotation Accelerator</h1>
+        <p class="lead">A fixed-point, 24-bit RGB image-rotation engine developed from MATLAB reference model to Verilog verification, Zynq implementation, and an exploratory ASIC place-and-route flow.</p>
+        <p class="scope"><strong>Scope.</strong> Team project with Amirreza Imani. My documented contribution spans algorithm development, RTL and testbench work, FPGA integration, and ASIC-flow evaluation. The page separates verified implementation results from the incomplete final board demonstration.</p>
+      </div>
+      <div class="metric-grid">
+        <div class="metric"><b>50 MHz</b><span>routed FPGA clock</span></div>
+        <div class="metric"><b>3,775</b><span>slice LUTs · 21.45%</span></div>
+        <div class="metric"><b>5,723</b><span>registers · 16.26%</span></div>
+        <div class="metric"><b>0.767 W</b><span>estimated on-chip power</span></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="wrap">
+    <section class="case-section">
+      <div class="case-grid">
+        <div><div class="eyebrow">01 · Design problem</div><h2>Rotate without clipping.</h2></div>
+        <div>
+          <p>The accelerator accepts a stream of 24-bit RGB pixels, rotates the image by a user-controlled angle, expands the output canvas so the corners are not cropped, and emits the result as a new pixel stream. Width, height, maximum canvas size, and initial angle are parameterized in the RTL.</p>
+          <p>Rotation uses inverse coordinate mapping: each output location is mapped back into the source image. This avoids holes that occur with forward mapping and makes the selected interpolation policy explicit.</p>
+          <div class="lesson"><p><strong>Core engineering trade-off.</strong> Bilinear interpolation improved visual quality, while nearest-neighbor interpolation substantially simplified the hardware data path. Both were modeled; the RTL comparison used the nearest-neighbor reference.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="case-section">
+      <div class="case-grid">
+        <div><div class="eyebrow">02 · Architecture</div><h2>Fixed-point control and streaming data.</h2><p>Trigonometric values are stored in signed fixed-point lookup tables covering -180° to +180°. The input controls increment or decrement the angle and trigger a new frame.</p></div>
+        <div class="arch-flow" aria-label="Image rotation processing pipeline">
+          <div><b>RGB stream in</b><span>24-bit pixels</span></div><i>→</i>
+          <div><b>Frame capture</b><span>parameterized canvas</span></div><i>→</i>
+          <div><b>Coordinate map</b><span>sin/cos LUTs</span></div><i>→</i>
+          <div><b>Nearest pixel</b><span>inverse mapping</span></div><i>→</i>
+          <div><b>RGB stream out</b><span>valid-qualified pixels</span></div>
+        </div>
+      </div>
+      <div class="next phase-grid">
+        <div><h3>Reference model</h3><p>MATLAB established canvas dimensions, fixed-point trigonometry, and nearest/bilinear interpolation outputs.</p></div>
+        <div><h3>RTL engine</h3><p>A Verilog state machine sequenced frame capture, rotation, and streaming output with explicit valid signals.</p></div>
+        <div><h3>System wrapper</h3><p>The custom IP was packaged for AXI-based Zynq integration alongside memory, debug, and video-path blocks.</p></div>
+      </div>
+    </section>
+
+    <section class="case-section">
+      <div class="case-grid">
+        <div><div class="eyebrow">03 · Verification</div><h2>Reference-to-RTL comparison.</h2><p>File-driven testbenches supplied RGB pixels and compared every emitted channel against the MATLAB result. A one-code difference was classified as a rounding warning; larger mismatches were errors.</p></div>
+        <div>
+          <table class="results">
+            <thead><tr><th>Test angle</th><th>Reference outputs</th><th>RTL evidence</th></tr></thead>
+            <tbody>
+              <tr><td>+45°</td><td>Nearest + bilinear</td><td class="status">Pixel comparison + waveforms</td></tr>
+              <tr><td>+120°</td><td>Nearest + bilinear</td><td class="status">Generated output</td></tr>
+              <tr><td>-28°</td><td>Nearest + bilinear</td><td class="status">Generated output</td></tr>
+              <tr><td>-105°</td><td>Nearest + bilinear</td><td class="status">Generated output</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="evidence-grid">
+        <figure class="figure"><img src="imgs/rotation-45-comparison.jpg" alt="Comparison of nearest-neighbor, bilinear, and Verilog outputs for a 45 degree rotation"><figcaption class="caption">45° comparison: nearest-neighbor, bilinear, and Verilog output.</figcaption></figure>
+        <figure class="figure"><img src="imgs/rotation-minus105-comparison.jpg" alt="Comparison of nearest-neighbor, bilinear, and Verilog outputs for a minus 105 degree rotation"><figcaption class="caption">-105° comparison verifies negative-angle and multi-quadrant handling.</figcaption></figure>
+      </div>
+    </section>
+
+    <section class="case-section">
+      <div class="case-grid">
+        <div><div class="eyebrow">04 · FPGA implementation</div><h2>Timing closed on Zynq-7010.</h2><p>The routed Vivado 2017.4 design targets an XC7Z010-2 device. The system wrapper includes the processing system, memory/video infrastructure, custom logic, and integrated debug support.</p></div>
+        <div>
+          <table class="results">
+            <thead><tr><th>Routed metric</th><th>Result</th><th>Interpretation</th></tr></thead>
+            <tbody>
+              <tr><td>Clock</td><td>50 MHz</td><td class="status">All constraints met</td></tr>
+              <tr><td>Setup / hold WNS</td><td>11.469 ns / 0.053 ns</td><td>0 failing endpoints</td></tr>
+              <tr><td>Slice LUTs</td><td>3,775 / 17,600</td><td>21.45%</td></tr>
+              <tr><td>Slice registers</td><td>5,723 / 35,200</td><td>16.26%</td></tr>
+              <tr><td>Block RAM tiles</td><td>8 / 60</td><td>13.33%</td></tr>
+              <tr><td>DSP blocks</td><td>0 / 80</td><td>No DSP dependency</td></tr>
+              <tr><td>Estimated power</td><td>0.767 W</td><td>0.662 W dynamic</td></tr>
+            </tbody>
+          </table>
+          <p class="caption">Power confidence is reported as medium because no simulation activity file was supplied.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="case-section">
+      <div class="case-grid">
+        <div><div class="eyebrow">05 · ASIC exploration</div><h2>From synthesis to floorplan.</h2><p>The same RTL was synthesized in Synopsys Design Vision and taken into Cadence Innovus for floorplanning and placement.</p></div>
+        <div class="metric-grid">
+          <div class="metric"><b>58,464 µm²</b><span>synthesized cell area</span></div>
+          <div class="metric"><b>250 × 250 µm</b><span>selected floorplan</span></div>
+          <div class="metric"><b>94.14%</b><span>reported placement density</span></div>
+          <div class="metric"><b>15 + 15</b><span>horizontal + vertical stripes</span></div>
+        </div>
+      </div>
+      <div class="lesson"><p><strong>Qualification.</strong> The ASIC numbers are exploratory implementation evidence, not signoff results: the report states that clock, area, and power constraints were not fully defined. They are useful for exposing the design's memory-driven cost and guiding the next architecture revision.</p></div>
+    </section>
+
+    <section class="case-section">
+      <div class="case-grid">
+        <div><div class="eyebrow">06 · Outcome</div><h2>What worked—and what did not.</h2></div>
+        <div>
+          <p>Algorithmic behavior and RTL output were validated, the complete FPGA system routed with timing met, and the design progressed through synthesis and physical-design exploration. The final AX7010 laboratory demonstration did not produce the intended HDMI result within the available two-day session.</p>
+          <p>The phase-four redesign identified the main architectural issue: keeping separate input and output image memories plus a large state machine made the original implementation too resource-heavy. The simplified revision removed both local image memories and reduced control complexity, but the end-to-end board path still needed more integration time.</p>
+        </div>
+      </div>
+      <div class="next">
+        <div><h3>Stream by tiles</h3><p>Replace full-frame storage with line buffers or tiles to bound BRAM use as image dimensions scale.</p></div>
+        <div><h3>Pipeline mapping</h3><p>Decouple coordinate generation, memory fetch, interpolation, and output buffering for predictable throughput.</p></div>
+        <div><h3>Verify the interfaces</h3><p>Add AXI4-Stream protocol assertions and an automated hardware loopback test before HDMI integration.</p></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="wrap"><a class="back" href="../../#projects">← Back to all projects</a><footer class="footer"><span>© 2026 Mohammad Parsa Abedi</span><span>VLSI image-rotation case study</span></footer></div>
+</body>
+</html>
