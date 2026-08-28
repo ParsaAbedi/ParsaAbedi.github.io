@@ -15,7 +15,7 @@
         <div class="eyebrow">Digital VLSI · Verilog · Zynq</div>
         <h1>Image Rotation Accelerator</h1>
         <p class="lead">A fixed-point, 24-bit RGB image-rotation engine developed from MATLAB reference model to Verilog verification, Zynq implementation, and an exploratory ASIC place-and-route flow.</p>
-        <p class="scope"><strong>Scope.</strong> Team project with Amirreza Imani. My documented contribution spans algorithm development, RTL and testbench work, FPGA integration, and ASIC-flow evaluation. The page separates verified implementation results from the incomplete final board demonstration.</p>
+        <p class="scope"><strong>Scope.</strong> Team project with Amirreza Imani. My contribution spans algorithm development, RTL and testbench work, FPGA integration, hardware implementation, and ASIC-flow evaluation.</p>
       </div>
       <div class="metric-grid">
         <div class="metric"><b>50 MHz</b><span>routed FPGA clock</span></div>
@@ -54,6 +54,18 @@
         <div><h3>RTL engine</h3><p>A Verilog state machine sequenced frame capture, rotation, and streaming output with explicit valid signals.</p></div>
         <div><h3>System wrapper</h3><p>The custom IP was packaged for AXI-based Zynq integration alongside memory, debug, and video-path blocks.</p></div>
       </div>
+      <div class="case-grid detail-block">
+        <div><div class="eyebrow">Verilog datapath</div><h2>From coordinates to pixels.</h2></div>
+        <div>
+          <p>The original <code>ImageRotation</code> RTL is parameterized by input width, height, maximum output canvas, and initial angle. It separates each 24-bit input into 8-bit red, green, and blue channels, then reconstructs the output word after coordinate mapping.</p>
+          <p>A nine-state controller handles reset, frame-size capture, trigonometric lookup, header detection, pixel reception, rotation, and output streaming. Signed sine and cosine values are loaded from fixed-point LUTs. For every output coordinate, the datapath subtracts the image center, applies the inverse rotation matrix, restores the source-image offset, and selects the nearest valid source pixel.</p>
+          <p>The later Phase 4 revision converted the core into a direct video-path block with 24-bit data, HSYNC, VSYNC, active-video, clock, and reset signals. Removing full-frame input/output memories reduced the resource bottleneck and made the core easier to place between the video DMA and AXI4-Stream-to-Video blocks.</p>
+        </div>
+      </div>
+      <div class="evidence-grid">
+        <figure class="figure report-shot"><a href="imgs/phase4-streaming-rtl.jpg"><img src="imgs/phase4-streaming-rtl.jpg" alt="Phase 4 streaming RTL revision and rotation example"></a><figcaption class="caption">Phase 4: the memory-heavy frame architecture was replaced by a simpler streaming implementation.</figcaption></figure>
+        <figure class="figure report-shot"><a href="imgs/zynq-block-design.jpg"><img src="imgs/zynq-block-design.jpg" alt="Verilog module ports and Zynq video block design"></a><figcaption class="caption">The Verilog video interface and its position inside the Zynq display pipeline.</figcaption></figure>
+      </div>
     </section>
 
     <section class="case-section">
@@ -70,6 +82,17 @@
             </tbody>
           </table>
         </div>
+      </div>
+      <div class="case-grid detail-block">
+        <div><div class="eyebrow">System integration</div><h2>Packaged as reusable video IP.</h2></div>
+        <div>
+          <p>The RTL was packaged in Vivado as a custom IP block. Its physical ports were mapped to video-bus signals, including pixel data, active video, horizontal sync, and vertical sync. The block design connected the core to the Zynq processing system, AXI interconnect, video DMA, timing controller, AXI4-Stream-to-Video output, clocking, and HDMI output path.</p>
+          <p>Integration followed the complete Vivado flow: configure and map the interfaces, validate the block design, synthesize the IP and wrapper, generate the HDL wrapper, implement the design, and verify timing and resource reports. The resulting Phase 4 hardware implementation operated successfully; the local report directory contains an older progress copy that predates the final result.</p>
+        </div>
+      </div>
+      <div class="evidence-grid">
+        <figure class="figure report-shot"><a href="imgs/ip-packaging.jpg"><img src="imgs/ip-packaging.jpg" alt="Vivado IP packaging and video port mapping"></a><figcaption class="caption">Vivado IP Packager: video and AXI-facing interfaces were declared and mapped to the Verilog ports.</figcaption></figure>
+        <figure class="figure report-shot"><a href="imgs/vivado-implementation.jpg"><img src="imgs/vivado-implementation.jpg" alt="Vivado port mapping and completed implementation run"></a><figcaption class="caption">Interface mapping followed by wrapper synthesis and implementation in Vivado.</figcaption></figure>
       </div>
       <div class="evidence-grid">
         <figure class="figure"><img src="imgs/rotation-45-comparison.jpg" alt="Comparison of nearest-neighbor, bilinear, and Verilog outputs for a 45 degree rotation"><figcaption class="caption">45° comparison: nearest-neighbor, bilinear, and Verilog output.</figcaption></figure>
@@ -109,14 +132,25 @@
         </div>
       </div>
       <div class="lesson"><p><strong>Qualification.</strong> The ASIC numbers are exploratory implementation evidence, not signoff results: the report states that clock, area, and power constraints were not fully defined. They are useful for exposing the design's memory-driven cost and guiding the next architecture revision.</p></div>
+      <div class="case-grid detail-block">
+        <div><div class="eyebrow">Physical design</div><h2>Power grid, placement, and routing.</h2></div>
+        <div>
+          <p>Design Vision compiled the Verilog into a gate-level netlist with a reported cell area of 58,464 µm². That netlist and the technology LEF were imported into Innovus. Several floorplans were evaluated before selecting a 250 × 250 µm core with 5 µm margins.</p>
+          <p>The power-delivery network uses VDD/VSS rings with 1 µm width and spacing, plus 15 horizontal and 15 vertical stripes. Placement reached the reported 94.14% density. Innovus then placed the standard cells, checked the floorplan and power domain, and completed trial routing to expose congestion, metal-length, and via-count information.</p>
+        </div>
+      </div>
+      <div class="evidence-grid">
+        <figure class="figure report-shot"><a href="imgs/innovus-floorplan-metrics.jpg"><img src="imgs/innovus-floorplan-metrics.jpg" alt="Innovus floorplan dimensions and placement density report"></a><figcaption class="caption">Selected floorplan dimensions, stripe configuration, and the 94.14% placement-density report.</figcaption></figure>
+        <figure class="figure report-shot"><a href="imgs/innovus-placement.jpg"><img src="imgs/innovus-placement.jpg" alt="Innovus floorplan, power grid, placement and routed layout views"></a><figcaption class="caption">Innovus progression from floorplan to power grid, dense standard-cell placement, and routed layout.</figcaption></figure>
+      </div>
     </section>
 
     <section class="case-section">
       <div class="case-grid">
-        <div><div class="eyebrow">06 · Outcome</div><h2>What worked—and what did not.</h2></div>
+        <div><div class="eyebrow">06 · Outcome</div><h2>Verified from model to hardware.</h2></div>
         <div>
-          <p>Algorithmic behavior and RTL output were validated, the complete FPGA system routed with timing met, and the design progressed through synthesis and physical-design exploration. The final AX7010 laboratory demonstration did not produce the intended HDMI result within the available two-day session.</p>
-          <p>The phase-four redesign identified the main architectural issue: keeping separate input and output image memories plus a large state machine made the original implementation too resource-heavy. The simplified revision removed both local image memories and reduced control complexity, but the end-to-end board path still needed more integration time.</p>
+          <p>Algorithmic behavior and RTL output were validated against MATLAB, the FPGA system routed with timing met, and the Phase 4 implementation successfully carried the image-rotation core into the Zynq video path. The design also progressed through synthesis, floorplanning, placement, and routing exploration in the ASIC toolchain.</p>
+          <p>The most important architectural improvement was replacing the original dual-frame-memory structure and large controller with a lighter streaming video implementation. This reduced local storage and control overhead while preserving the 24-bit RGB video interface and rotation behavior.</p>
         </div>
       </div>
       <div class="next">
